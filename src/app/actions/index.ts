@@ -5,55 +5,28 @@ import { createReadStream, createWriteStream } from "fs";
 import { resolve } from "path";
 import nodeLatex from "node-latex";
 
-export async function downloadLatex({ latex }: { latex: string }) {
+export async function handleLatex({
+  latex,
+  method,
+}: {
+  latex: string;
+  method: "download" | "compile";
+}) {
   const publicDir = path.join(process.cwd(), "public");
   const latexFilePath = path.join(publicDir, "latex.tex");
   const outputPath = path.join(publicDir, "output.pdf");
 
-  if (!fs.existsSync(publicDir)) {
-    fs.mkdirSync(publicDir);
+  // Clean up any existing files first
+  try {
+    if (fs.existsSync(latexFilePath)) {
+      fs.unlinkSync(latexFilePath);
+    }
+    if (fs.existsSync(outputPath)) {
+      fs.unlinkSync(outputPath);
+    }
+  } catch (error) {
+    console.error("Error cleaning up files:", error);
   }
-
-  fs.writeFileSync(latexFilePath, latex);
-  const input = createReadStream(latexFilePath);
-  const output = createWriteStream(outputPath);
-
-  const options = {
-    inputs: resolve(publicDir),
-  };
-
-  // Create a promise to handle the PDF generation
-  return new Promise((resolve, reject) => {
-    const pdf = nodeLatex(input, options);
-    pdf.pipe(output);
-
-    output.on("finish", () => {
-      try {
-        // Read the generated PDF file
-        const pdfBuffer = fs.readFileSync(outputPath);
-        // Convert to base64
-        const base64PDF = pdfBuffer.toString("base64");
-
-        // Clean up temporary files
-        fs.unlinkSync(latexFilePath);
-        fs.unlinkSync(outputPath);
-
-        resolve(base64PDF);
-      } catch (error) {
-        reject(error);
-      }
-    });
-
-    pdf.on("error", (error: Error) => {
-      reject(error);
-    });
-  });
-}
-
-export async function compileLatex({ latex }: { latex: string }) {
-  const publicDir = path.join(process.cwd(), "public");
-  const latexFilePath = path.join(publicDir, "latex.tex");
-  const outputPath = path.join(publicDir, "output.pdf");
 
   if (!fs.existsSync(publicDir)) {
     fs.mkdirSync(publicDir);
@@ -69,13 +42,46 @@ export async function compileLatex({ latex }: { latex: string }) {
 
   const pdf = nodeLatex(input, options);
   pdf.pipe(output);
+
   return new Promise((resolve, reject) => {
-    output.on('finish', () => {
-      resolve('PDF generated successfully');
+    output.on("finish", async () => {
+      try {
+        if (method === "download") {
+          // Read the generated PDF file and convert to base64
+          const pdfBuffer = fs.readFileSync(outputPath);
+          const base64PDF = pdfBuffer.toString("base64");
+
+          // Clean up both files
+          fs.unlinkSync(latexFilePath);
+          fs.unlinkSync(outputPath);
+
+          resolve(base64PDF);
+        } else {
+          // For compile, just clean up the .tex file
+          fs.unlinkSync(latexFilePath);
+          resolve("PDF generated successfully");
+        }
+      } catch (error) {
+        reject(error);
+      }
     });
 
-    output.on('error', (error) => {
-      reject('Failed to generate PDF: ' + error.message); 
-    });
+    const handleError = (error: Error) => {
+      // Clean up both files if there's an error
+      try {
+        if (fs.existsSync(latexFilePath)) {
+          fs.unlinkSync(latexFilePath);
+        }
+        if (fs.existsSync(outputPath)) {
+          fs.unlinkSync(outputPath);
+        }
+      } catch (cleanupError) {
+        console.error("Error cleaning up files after error:", cleanupError);
+      }
+      reject("Failed to generate PDF: " + error.message);
+    };
+
+    pdf.on("error", handleError);
+    output.on("error", handleError);
   });
 }

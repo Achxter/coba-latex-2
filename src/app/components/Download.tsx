@@ -1,11 +1,11 @@
 'use client'
 import React from 'react'
-import { downloadLatex } from '@/app/actions/index'
+import { handleLatex } from '@/app/actions/index'
 
 function Download({ latex }: { latex: string }) {
   const handleClick = async () => {
     try {
-      const base64PDF = await downloadLatex({ latex });
+      const base64PDF = await handleLatex({ latex, method: "download" });
       if (typeof base64PDF !== 'string') {
         throw new Error('Invalid response from downloadLatex');
       }
@@ -36,10 +36,7 @@ function Download({ latex }: { latex: string }) {
           await writable.close();
         } catch (err) {
           console.log(err)
-          // If user cancels or API fails, fallback to traditional method
-          fallbackSaveMethod(pdfBlob);
         }
-
       } else {
         // Fallback for browsers that don't support File System Access API
         fallbackSaveMethod(pdfBlob);

@@ -1,10 +1,11 @@
 import React from 'react'
-import { compileLatex } from '../actions';
+import { handleLatex } from '../actions';
 
-function Compile({ latex }: { latex: string }) {
+function Compile({ latex, onCompileSuccess }: { latex: string, onCompileSuccess: () => void }) {
   const handleClick = async () => {
     try {
-      await compileLatex({ latex });
+      await handleLatex({ latex, method: "compile" });
+      onCompileSuccess();
     } catch (error) {
       console.error('Error compiling LaTeX:', error);
     }
