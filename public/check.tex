@@ -1,0 +1,15 @@
+\begin{center}
+\includegraphics[height=200pt, width=200pt, alt=KA logo]{pp-biografi.jpg}
+\end{center}
+\section{Latar Belakang}
+Dalam era modern, teknologi komunikasi nirkabel dan sistem perencanaan jaringan telah berkembang dengan pesat untuk mendukung kebutuhan layanan berkualitas tinggi. Salah satu tantangan utama dalam sistem jaringan seluler adalah penempatan Base Station (BS) yang optimal guna memastikan cakupan jaringan maksimal dan minim interferensi. Dalam konteks ini, pendekatan algoritma genetika (GA) menjadi salah satu solusi yang efektif untuk mengoptimalkan penempatan BS, terutama pada wilayah berbasis geografis yang kompleks.
+
+\section{Definisi Masalah}
+Permasalahan utama dalam penelitian ini berfokus pada optimasi penempatan menara telekomunikasi dengan mempertimbangkan beberapa parameter penting. Salah satu aspek yang menjadi perhatian adalah jumlah tower atau Base Station (BS), yang diasumsikan sebanyak empat menara dalam area studi tertentu. Selanjutnya, cakupan sinyal ditetapkan sejauh 0,8 satuan, sehingga meminimalkan area tanpa cakupan (coverage holes) menjadi prioritas utama. Oleh karena itu, evaluasi cakupan dilakukan melalui fungsi fitness yang memperhitungkan distribusi penduduk dan elevasi geografis.
+
+Distribusi penduduk menjadi faktor signifikan, dengan total populasi sebanyak 500 individu yang didistribusikan ke dalam lima cluster berdasarkan model distribusi Gaussian. Untuk memastikan cakupan minimum, setiap individu diharuskan berada dalam jangkauan sinyal setidaknya satu menara. Di sisi lain, interferensi sinyal juga menjadi tantangan yang harus diatasi. Interferensi ini dipengaruhi oleh tinggi BS, di mana jika perbedaan ketinggian antara individu dan BS melebihi ambang batas 50 meter, interferensi akan diperhitungkan. Selain itu, individu yang berada dalam cakupan lebih dari satu menara juga menyebabkan interferensi dihitung berdasarkan jumlah menara yang mencakup area tersebut.
+
+Area penelitian dibatasi oleh koordinat longitude [100, 104] dan latitude [-1, 3], dengan variasi elevasi dimodelkan menggunakan simulasi kontur wilayah. Hal ini memberikan batasan realistis yang memungkinkan pengujian efektivitas algoritma dalam kondisi geografis yang kompleks. Namun demikian, penelitian ini memiliki beberapa keterbatasan. Pertama, jumlah tower yang digunakan dalam simulasi bersifat tetap, yaitu empat menara, sehingga cakupan untuk area yang sangat luas mungkin tidak optimal. Kedua, data elevasi yang digunakan berbasis simulasi, sehingga hasilnya mungkin berbeda jika dibandingkan dengan data topografi nyata. Ketiga, distribusi populasi diasumsikan mengikuti pola distribusi Gaussian, tanpa mempertimbangkan variasi distribusi penduduk yang lebih kompleks di dunia nyata.
+
+\section{Tujuan}
+Penelitian ini bertujuan untuk mengembangkan model penempatan BS berbasis algoritma genetika yang mampu memaksimalkan cakupan sinyal dan meminimalkan interferensi. Selain itu, model ini dirancang untuk mempertimbangkan parameter geografis serta distribusi penduduk guna menghasilkan solusi optimal dalam penempatan menara telekomunikasi.
